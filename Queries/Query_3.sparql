@@ -1,20 +1,34 @@
-# compound, ktory treats alebo palliates chorobu a zaroven, ktory ma resemble compound (compound)
-# treats: 3405, palliates: 2325
-# najdi zlúčeninu, ktora sa podoba na inú zlúčeninu a zároveň má schopnosť liečiť alebo zmierňovať chorobu.
+# Nájdi zlúčeninu, ktorá sa podobá na inú zlúčeninu a zároveň má schopnosť liečiť alebo zmierňovať chorobu.
 
-PREFIX het: <https://het.io/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+# definujeme predpony
+PREFIX het: <https://het.io/>           
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>         
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>        
 
-SELECT DISTINCT ?compound ?compoundLabel ?predicate ?disease ?diseaseLabel ?resembleCompound ?resembleLabel
+# dopyt
+SELECT DISTINCT 
+    ?compound         # vyberame zluceninu
+    ?compoundLabel    # nazov zluceniny
+    ?predicate        # aky vztah ma zlucenina k chorobe (treats alebo palliates)
+    ?disease          # vyberame chorobu
+    ?diseaseLabel     # nazov choroby
+    ?resembleCompound # zlucenina, ktora sa podoba na prvotnu zluceninu
+    ?resembleLabel    # nazov tejto podobnej zluceniny
 WHERE {
+  # zlucenina a podobna zlucenina musia byt typu 'het:compound'
   ?compound rdf:type het:compound .
   ?resembleCompound rdf:type het:compound .
+  
+  # podobna zlucenina musi byt podobna na prvotnu zluceninu
   ?compound het:resembles ?resembleCompound .
+  
+  # pridavame nazvy zluceny a choroby
   ?compound skos:prefLabel ?compoundLabel .
   ?resembleCompound skos:prefLabel ?resembleLabel .
   ?disease skos:prefLabel ?diseaseLabel .
+  
+  # zlucenina buď lieci (treats) alebo zmiernuje (palliates) chorobu
   {
     ?compound het:treats ?disease .
     BIND(het:treats AS ?predicate)
@@ -23,4 +37,6 @@ WHERE {
     BIND(het:palliates AS ?predicate)
   }
 }
+
+# usporiadame vysledky podla vztahu (treats / palliates)
 ORDER BY ?predicate
