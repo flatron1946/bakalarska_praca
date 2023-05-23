@@ -1,0 +1,26 @@
+# compound, ktory treats alebo palliates chorobu a zaroven, ktory ma resemble compound (compound)
+# treats: 3405, palliates: 2325
+# najdi zlúčeninu, ktora sa podoba na inú zlúčeninu a zároveň má schopnosť liečiť alebo zmierňovať chorobu.
+
+PREFIX het: <https://het.io/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?compound ?compoundLabel ?predicate ?disease ?diseaseLabel ?resembleCompound ?resembleLabel
+WHERE {
+  ?compound rdf:type het:compound .
+  ?resembleCompound rdf:type het:compound .
+  ?compound het:resembles ?resembleCompound .
+  ?compound skos:prefLabel ?compoundLabel .
+  ?resembleCompound skos:prefLabel ?resembleLabel .
+  ?disease skos:prefLabel ?diseaseLabel .
+  {
+    ?compound het:treats ?disease .
+    BIND(het:treats AS ?predicate)
+  } UNION {
+    ?compound het:palliates ?disease .
+    BIND(het:palliates AS ?predicate)
+  }
+}
+ORDER BY ?predicate
