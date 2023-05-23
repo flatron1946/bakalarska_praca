@@ -1,11 +1,17 @@
-# vsetky side effects compoundu DB00679
+# Vypíš URI a názov všetkých vedľajších účinkov zlúčeniny DB00679. 
 
+# Definujeme prefixy pre namespaces
 PREFIX het: <https://het.io/>
 PREFIX drug: <https://bioregistry.io/drugbank:>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
+# Vyberieme premenne, ktore budu vratene vo vysledku dopytu
 SELECT ?compound ?compound_label ?side_effect ?side_effect_label
 WHERE {
+    # 1. priradime konkretnu hodnotu do premennej ?compound
+    # 2. vyberieme triplety kde ?compound sposobuje ?side_effect
+    # 3. ziskame nazov tychto ?compound pomocou skos:prefLabel
+    # 4. ziskame nazov ?side_effect pomocou skos:prefLabel
     BIND(drug:DB00679 AS ?compound)
     ?compound het:causes ?side_effect .
     ?compound skos:prefLabel ?compound_label .
