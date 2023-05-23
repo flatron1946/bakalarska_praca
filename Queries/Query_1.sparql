@@ -1,0 +1,13 @@
+# vsetky side effects compoundu DB00679
+
+PREFIX het: <https://het.io/>
+PREFIX drug: <https://bioregistry.io/drugbank:>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?compound ?compound_label ?side_effect ?side_effect_label
+WHERE {
+    BIND(drug:DB00679 AS ?compound)
+    ?compound het:causes ?side_effect .
+    ?compound skos:prefLabel ?compound_label .
+    ?side_effect skos:prefLabel ?side_effect_label .
+}
