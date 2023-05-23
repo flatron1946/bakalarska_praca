@@ -1,38 +1,38 @@
 # Vypíš na akom biologickom procese alebo molekulárnej funkcii sa podieľa gén 4140?
 
-# definujeme prefixy pre namespaces
+# definujeme predpony
 PREFIX het: <https://het.io/>
-PREFIX gene: <https://bioregistry.io/ncbigene:>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX gene: <https://bioregistry.io/ncbigene:> 
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#> 
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  
 
-# vyberieme premenne, ktore chceme dostat
-SELECT ?gene ?gene_label ?participates ?process_function_label ?type
+# Dopyt
+SELECT 
+    ?gene                    # vyberame gen
+    ?gene_label              # nazov genu
+    ?participates            # URI biologickeho procesu/molekularnej funkcii na ktorej ma ucast gen
+    ?process_function_label  # nazov biologickeho procesu/molekularnej funkcie
+    ?type                    # typ ucasti - biologicky proces alebo molekularna funkcia
 WHERE {
-    # priradime konkretnu hodnotu do premennej ?gene
+    # definujeme gen
     BIND(gene:4140 as ?gene)
-    # priradime nazov genu do premennej ?gene_label
+    
+    # ziskame nazov genu
     gene:4140 skos:prefLabel ?gene_label .
-    # UNION sluzi ako operator "or". Hladame bud biologicky proces alebo molekularnu funkciu, ktora sa ucastni na gene:4140
+    
+    # zitujeme ci sa gen zucastnuje na biologickom procese
     {
-        # vyberieme triplety, kde sa ?gene ucastni na biologickych procesoch
-        gene:4140 het:participates ?participates .
-        # vyberieme iba tie kde je ?participates typu biological_process
-        ?participates rdf:type het:biological_process . 
-        # priradime nazov biologickeho porcesu do premennej ?process_function_label
-        ?participates skos:prefLabel ?process_function_label .        
-        # priradime string "biological_process" do premennej ?type
-        BIND("biological_process" as ?type)
+        gene:4140 het:participates ?participates .  
+        ?participates rdf:type het:biological_process .     # potvrdime ze sa gen zucastnuje na biologickom procese
+        ?participates skos:prefLabel ?process_function_label .     # ziskame nazov biologickeho procesu
+        BIND("biological_process" as ?type)     # definujeme typ ucasti ako 'biological_process'
     }
+    # zistujeme ci sa gen zucastnuje na molekularnej funkcii
     UNION
     {
-        # vyberieme triplety, kde sa ?gene ucastni na molekularnych funkciach
         gene:4140 het:participates ?participates .
-        # vyberieme iba tie kde je ?participates molecular_function
-        ?participates rdf:type het:molecular_function . 
-        # priradime nazov molekularnej funkcie do premennej ?process_function_label
-        ?participates skos:prefLabel ?process_function_label .
-        # priradime string "molecular_function" do premennej ?type
-        BIND("molecular_function" as ?type)
+        ?participates rdf:type het:molecular_function .     # potvrdime ze sa gen zucastnuje na molekularnej funkcii
+        ?participates skos:prefLabel ?process_function_label .  # ziskame nazov molekularnej funkcie
+        BIND("molecular_function" as ?type)     # definujeme typ ucasti ako 'molecular function'
     }
 }
