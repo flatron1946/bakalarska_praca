@@ -1,19 +1,21 @@
 # Vypíš URI a názov všetkých vedľajších účinkov zlúčeniny DB00679. 
 
-# Definujeme prefixy pre namespaces
-PREFIX het: <https://het.io/>
-PREFIX drug: <https://bioregistry.io/drugbank:>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+# definujeme predpony
+PREFIX het: <https://het.io/>               
+PREFIX drug: <https://bioregistry.io/drugbank:>   
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>  
 
-# Vyberieme premenne, ktore budu vratene vo vysledku dopytu
-SELECT ?compound ?compound_label ?side_effect ?side_effect_label
+# Dopyt
+SELECT 
+    ?compound             # vyberame URI zluceniny
+    ?compound_label       # nazov zluceniny
+    ?side_effect          # URI vedlasieho ucinku zluceniny
+    ?side_effect_label    # nazov vedlajsieho ucinku
 WHERE {
-    # 1. priradime konkretnu hodnotu do premennej ?compound
-    # 2. vyberieme triplety kde ?compound sposobuje ?side_effect
-    # 3. ziskame nazov tychto ?compound pomocou skos:prefLabel
-    # 4. ziskame nazov ?side_effect pomocou skos:prefLabel
+    # definicia zlucenina na ktoru sa dopytujeme
     BIND(drug:DB00679 AS ?compound)
-    ?compound het:causes ?side_effect .
-    ?compound skos:prefLabel ?compound_label .
-    ?side_effect skos:prefLabel ?side_effect_label .
+    
+    ?compound het:causes ?side_effect .  # vedlajsi ucinok, ktory zlucenina sposobuje
+    ?compound skos:prefLabel ?compound_label .  # ziskame nazov zluceniny
+    ?side_effect skos:prefLabel ?side_effect_label .  # ziskame nazov vedlajsieho ucinku
 }
