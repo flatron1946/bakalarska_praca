@@ -1,0 +1,24 @@
+# najdi mi pre danu chorobu (DOID:9970) vsetky lieky ktore nejak suvisia s genmi ktore suvisia s tou chorobou a vypis vedlajsie ucinky a sposob ako sa spajaju
+
+PREFIX het: <https://het.io/>
+PREFIX disease: <https://bioregistry.io/DOID:>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT DISTINCT ?diseaseLabel ?diseaseGeneRelation ?geneLabel ?compoundLabel ?compoundGeneRelation (GROUP_CONCAT(DISTINCT ?sideEffectLabel; SEPARATOR=", ") AS ?allSideEffects)
+WHERE {
+  BIND(disease:9970 AS ?disease)
+  ?disease ?diseaseGeneRelation ?gene .
+  ?compound ?compoundGeneRelation ?gene .
+  ?compound rdf:type het:compound .
+  ?compound het:causes ?sideEffect .
+
+  FILTER(?diseaseGeneRelation IN (het:associates, het:upregulates, het:downregulates)) 
+  FILTER(?compoundGeneRelation IN (het:upregulates, het:downregulates, het:binds))
+
+  ?disease skos:prefLabel ?diseaseLabel .
+  ?gene skos:prefLabel ?geneLabel .
+  ?compound skos:prefLabel ?compoundLabel .
+  ?sideEffect skos:prefLabel ?sideEffectLabel .
+}
+GROUP BY ?diseaseLabel ?diseaseGeneRelation ?geneLabel ?compoundLabel ?compoundGeneRelation
