@@ -1,0 +1,25 @@
+# Na akom biologickom procese alebo molekulárnej funkcii sa podieľa gén 4140?
+
+PREFIX het: <https://het.io/>
+PREFIX gene: <https://bioregistry.io/ncbigene:>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?gene ?gene_label ?participates ?process_function_label ?type
+WHERE {
+    BIND(gene:4140 as ?gene)
+    gene:4140 skos:prefLabel ?gene_label .
+    {
+        gene:4140 het:participates ?participates .
+        ?participates rdf:type het:biological_process . 
+        ?participates skos:prefLabel ?process_function_label .
+        BIND("biological_process" as ?type)
+    }
+    UNION
+    {
+        gene:4140 het:participates ?participates .
+        ?participates rdf:type het:molecular_function . 
+        ?participates skos:prefLabel ?process_function_label .
+        BIND("molecular_function" as ?type)
+    }
+}
